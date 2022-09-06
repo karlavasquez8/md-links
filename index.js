@@ -8,6 +8,8 @@ const { JSDOM } = jsdom;
 
 const nodePath = require('node:path')
 
+
+
 function isFile(path) {
   return fs.statSync(path).isFile()
 }
@@ -24,7 +26,8 @@ function openDir(path) {
   return fs.readdirSync(path)
 }
 
-function scanlinks(path) {
+
+function scanLinks(path) {
   const contentFile = openFile(path)
   //convirtiendo a string de html el archivo md
   const stringHtml = md.render(contentFile)
@@ -43,17 +46,16 @@ function scanlinks(path) {
 
 const mdLinks = (path, config = { validate: false }) => {
   if (isFile(path)) {
-    console.log(scanlinks(path))
+    scanLinks(path)
   }
   if (isDirectory(path)) {
     const files = openDir(path)
-    console.log(files)
     let listLinks = []
 
     files.forEach((file) => {
       //ruta completa del directorio
       const fullPath = nodePath.join(path, file)
-      listLinks = [...listLinks, ...scanlinks(fullPath)]
+      listLinks = [...listLinks, ...scanLinks(fullPath)]
     })
     console.log(listLinks)
   }
@@ -64,6 +66,12 @@ const mdLinks = (path, config = { validate: false }) => {
   // arraylist.forEach()
 };
 
-module.exports = mdLinks;
+module.exports = {
+  isFile,
+  openFile,
+  openDir,
+  isDirectory,
+  scanLinks,
+}
 
 mdLinks('storage', { validate: true });

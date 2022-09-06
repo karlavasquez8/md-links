@@ -4,6 +4,7 @@ module.exports = {
         "commonjs": true,
         "es2021": true
     },
+    "plugins": ["jest"],
     "extends": "eslint:recommended",
     "overrides": [
     ],
@@ -14,6 +15,5 @@ module.exports = {
         "linebreak-style": 0,
         "prefer-destructuring": 0,
         "import/extensions": 0,
-        "import/prefer-default-export": 0
     }
 }

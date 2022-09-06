@@ -1,0 +1,1 @@
+Estos archivos Markdown normalmente contienen links, vínculos y ligas.
