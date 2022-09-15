@@ -9,9 +9,16 @@ const { JSDOM } = jsdom;//constructor de jsdom
 const nodePath = require('node:path')
 
 const axios = require('axios');
+const { url } = require('inspector');
+const { errorMonitor } = require('events');
 
 
-//funciones
+//funcion para verificar la extension de un archivo
+function fileExtension(path) {
+  return nodePath.extname(path) === '.md'
+}
+// console.log(fileExtension('storage/prueba.md'))
+
 //funcion para saber si es un archivo
 function isFile(path) {
   return fs.statSync(path).isFile()
@@ -31,9 +38,13 @@ function openDir(path) {
   return fs.readdirSync(path)
 }
 
+// funcion que verifica si la path es absoluta
+function isPathAbsolute(route) {
+  return nodePath.isAbsolute(route)
+}
 //convirtiendo a ruta absoluta
-function pathAbsolute(route) {
-  return path.isAbsolute(route) ? route : path.resolve(route)
+function toPathAbsolute(route) {
+  return isPathAbsolute(route) ? route : nodePath.resolve(route)
 }
 
 //funcion para verificar si existe una ruta
@@ -59,63 +70,103 @@ function scanLinks(path) {
 
 //HTTP
 //Funcion para validar los links que se extrajeron
-const validateServer = (path) => {
-  return axios(path)
+const validateLink = (url) => {
+  return axios(url)
     .then((data) => {
       if (data.status === 200) {
         return {
-          path,
+          url,
           status: data.status,
           menssage: 'ok'
         };
       }
     })
-    .catch((error) => {
-      return ({
-        path,
-        status: error.response.status,
-        menssage: 'fail'
-      })
-    })
+
+  // .catch((error) => {
+  //   console.log({ error })
+  //   return ({
+  //     url,
+  //     // status: error.response.status,
+  //     menssage: 'fail'
+  //   })
+  // })
 };
 
-validateServer('https://www.geeksforgeeks.org/node-js-fs-readfilesync-method/').then((data) => {
-  console.log(data)
-})
 
-//new Promise((resolve, reject) => {
-//   axios.get(paths)
-//     .then((response) => {
-//       console.log(response);
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     });
+// probando el la funcion para validar links
+// validateLink('https://www.geeksforgeeks.org/node-js-fs-readfilesync-method2/').then((data) => {
+//   console.log(data)
 // })
-
-
+//   .catch((error) => {
+//     console.log(error.response.status)
+//   })
 
 const mdLinks = (path, config = { validate: false }) => {
-  if (isFile(path)) {
-    scanLinks(path)
-  }
-  if (isDirectory(path)) {
-    const files = openDir(path)
-    let listLinks = []
-
-    files.forEach((file) => {
-      //ruta completa del directorio
-      // const fullPath = nodePath.join(path, file)
-      const fullPath = nodePath.resolve(nodePath.join(path, file))
-      listLinks = [...listLinks, ...scanLinks(fullPath)]
+  return new Promise((resolve, reject) => {
+    if (!pathExist(path)) {
+      // console.log('no existe la ruta')
+      reject(new Error('no existe la ruta'))
+    }
+    // const isFile = isFile(path)
+    const pathAbsolute = toPathAbsolute(path)
+    // console.log(pathAbsolute)
+    const listFoundLinks = scanLinks(pathAbsolute)
+    // console.log(listFoundLinks)
+    const promisesArray = listFoundLinks.map(async (items) => {
+      try {
+        const resultItem = await validateLink(items.href)
+        return { ...items, ...resultItem }
+      } catch (error) {
+        return {
+          ...items,
+          url: items.href,
+          status: error.response.status,
+          message: error.response.statusText
+        }
+      }
     })
-  }
+
+    const result = Promise.all(promisesArray)
+    result.then((resultado) => {
+      console.log(resultado)
+    })
+    resolve(result);
+  })
+
+
+  // if (isDirectory(path)) {
+  //   const files = openDir(path)
+  //   let listLinks = []
+
+  //   files.forEach((file) => {
+  //     //ruta completa del directorio
+  //     // const fullPath = nodePath.join(path, file)
+  //     const fullPath = nodePath.resolve(nodePath.join(path, file))
+  //     listLinks = [...listLinks, ...scanLinks(fullPath)]
+  //   })
+
+  // }
+}
+//   if (isFile(path)) {
+//     scanLinks(path)
+//   }
+// if (isDirectory(path)) {
+//   const files = openDir(path)
+//   let listLinks = []
+
+//   files.forEach((file) => {
+//     //ruta completa del directorio
+//     // const fullPath = nodePath.join(path, file)
+//     const fullPath = nodePath.resolve(nodePath.join(path, file))
+//     listLinks = [...listLinks, ...scanLinks(fullPath)]
+//   })
+// }
 
 
 
-  // arraylist =openDir(path)
-  // arraylist.forEach()
-};
+// arraylist =openDir(path)
+// arraylist.forEach()
+
 
 module.exports = {
   isFile,
@@ -125,4 +176,4 @@ module.exports = {
   scanLinks,
 }
 
-mdLinks('storage/file.md', { validate: true });
+mdLinks('storage/prueba.md', { validate: true });
