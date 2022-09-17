@@ -4,8 +4,12 @@ const {
   openFile,
   openDir,
   scanLinks,
+  validateLink,
 
 } = require('../index.js');
+const axios = require('axios')
+jest.mock('axios')
+
 
 
 describe('is File', () => {
@@ -31,7 +35,8 @@ describe('Directory Content', () => {
     const result = [
       'file.md',
       'prueba.md',
-      'pruebadecontenido.md'
+      'pruebadecontenido.md',
+      'prueba.txt'
     ];
     expect(openDir('./storage')).toEqual(result)
   });
@@ -58,5 +63,13 @@ describe('scanLinks', () => {
   ];
   it('should return an array of links', () => {
     expect(scanLinks('storage/prueba.md')).toEqual(arrayLinks)
+  })
+})
+describe('validate Links', () => {
+  it('should return an object with a status of ok', () => {
+    axios.get.mockImplementation(() => Promise.resolve({ status: 200 }))
+    validateLink('https://nodejs.org/').then((data) => {
+      expect(data).toEqual({ url: 'https://nodejs.org/', status: 200, menssage: 'ok' })
+    })
   })
 })
