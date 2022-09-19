@@ -68,7 +68,7 @@ function scanLinks(path) {
 
 //HTTP
 //Funcion para validar los links que se extrajeron
-const validateLink = (url) => {
+function validateLink(url) {
   return axios.get(url)
     .then((data) => {
       if (data.status === 200) {
@@ -119,6 +119,38 @@ function processFile(path, config) {
 
 }
 
+function getPathsDirectory(path) {
+  const files = openDir(path)
+  const fileMd = files.filter(file => fileExtension(file))
+
+  return fileMd.map((file) => {
+    //ruta completa del directorio, carpeta con archivo de tipo string
+    return nodePath.resolve(nodePath.join(path, file))
+  })
+}
+// console.log(getPathsDirectory('storage'))
+
+function stats(arrayLinks) {
+  const totalLinks = arrayLinks.map(link => link.href);
+  const uniqueLinks = [...new Set(totalLinks)]
+  return {
+    Total: totalLinks.length,
+    Unique: uniqueLinks.length,
+  }
+
+}
+function totalLink(arrayLinks) {
+  const totalLinks = arrayLinks.map(link => link.href);
+  const uniqueLinks = [...new Set(totalLinks)]
+  const broken = arrayLinks.filter(link => link.status != 200)
+  return {
+    Total: totalLinks.length,
+    Unique: uniqueLinks.length,
+    Broken: broken.length,
+  }
+}
+console.log(stats(scanLinks('storage/file.md')))
+
 const mdLinks = (path, config = { validate: false }) => {
   return new Promise((resolve, reject) => {
     const pathAbsolute = toPathAbsolute(path)
@@ -146,17 +178,7 @@ const mdLinks = (path, config = { validate: false }) => {
   })
 
 }
-function getPathsDirectory(path) {
-  const files = openDir(path)
-  const fileMd = files.filter(file => fileExtension(file))
 
-  return fileMd.map((file) => {
-    //ruta completa del directorio, carpeta con archivo de tipo string
-    return nodePath.resolve(nodePath.join(path, file))
-  })
-
-}
-// console.log(getPathsDirectory('storage'))
 
 module.exports = {
   isFile,
@@ -165,8 +187,10 @@ module.exports = {
   isDirectory,
   scanLinks,
   validateLink,
+  getPathsDirectory,
+  processFile,
 }
 
-mdLinks('storage', { validate: true }).then((resultados) => {
-  console.log(resultados)
-})
+// mdLinks('storage', { validate: true }).then((resultados) => {
+//   console.log(resultados)
+// })

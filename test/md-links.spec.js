@@ -5,6 +5,8 @@ const {
   openDir,
   scanLinks,
   validateLink,
+  processFile,
+  getPathsDirectory,
 
 } = require('../index.js');
 const axios = require('axios')
@@ -66,9 +68,10 @@ describe('scanLinks', () => {
   })
 })
 describe('validate Links', () => {
-  it('should return an object with a status of ok', () => {
+  it.only('should return an object with a status of ok', () => {
     axios.get.mockImplementation(() => Promise.resolve({ status: 200 }))
     validateLink('https://nodejs.org/').then((data) => {
+      console.log(data)
       expect(data).toEqual({ url: 'https://nodejs.org/', status: 200, menssage: 'ok' })
     })
   })
