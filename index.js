@@ -89,6 +89,31 @@ function validateLink(url) {
 //     console.log(error.response.status)
 //   })
 
+// function stats(arrayLinks) {
+//   const totalLinks = arrayLinks.map(link => link.href);
+//   const uniqueLinks = [...new Set(totalLinks)]
+//   const broken = arrayLinks.filter(link => link.status != 200)
+
+// }
+
+function stats(arrayLinks, config) {
+  const totalLinks = arrayLinks.map(link => link.href);
+  const uniqueLinks = [...new Set(totalLinks)]
+  const broken = arrayLinks.filter(link => link.status != 200)
+  if (config.validate === true) {
+    return {
+      Total: totalLinks.length,
+      Unique: uniqueLinks.length,
+      Broken: broken.length,
+    }
+  }
+  return {
+    Total: totalLinks.length,
+    Unique: uniqueLinks.length,
+  }
+}
+
+
 function processFile(path, config) {
   return new Promise((resolve) => {
     // const isFile = isFile(path)
@@ -98,8 +123,10 @@ function processFile(path, config) {
       const promisesArray = listFoundLinks.map(async (items) => {
         try {
           const resultItem = await validateLink(items.href)
+          // console.log(resultItem)
           return { ...items, ...resultItem }
         } catch (error) {
+          // console.log(error)
           return {
             ...items,
             url: items.href,
@@ -119,6 +146,7 @@ function processFile(path, config) {
 
 }
 
+
 function getPathsDirectory(path) {
   const files = openDir(path)
   const fileMd = files.filter(file => fileExtension(file))
@@ -130,28 +158,11 @@ function getPathsDirectory(path) {
 }
 // console.log(getPathsDirectory('storage'))
 
-function stats(arrayLinks) {
-  const totalLinks = arrayLinks.map(link => link.href);
-  const uniqueLinks = [...new Set(totalLinks)]
-  return {
-    Total: totalLinks.length,
-    Unique: uniqueLinks.length,
-  }
 
-}
-function totalLink(arrayLinks) {
-  const totalLinks = arrayLinks.map(link => link.href);
-  const uniqueLinks = [...new Set(totalLinks)]
-  const broken = arrayLinks.filter(link => link.status != 200)
-  return {
-    Total: totalLinks.length,
-    Unique: uniqueLinks.length,
-    Broken: broken.length,
-  }
-}
-console.log(stats(scanLinks('storage/file.md')))
 
-const mdLinks = (path, config = { validate: false }) => {
+// console.log(stats(scanLinks('storage/file.md')))
+
+const mdLinks = (path, config = { validate: false, stats: false }) => {
   return new Promise((resolve, reject) => {
     const pathAbsolute = toPathAbsolute(path)
     if (!pathExist(pathAbsolute)) {
@@ -160,17 +171,36 @@ const mdLinks = (path, config = { validate: false }) => {
     }
     if (isFile(pathAbsolute)) {
       processFile(pathAbsolute, config).then((arrayObject) => {
+        if (config.stats === true) {
+          resolve(stats(arrayObject, { validate: config.validate }))
+        }
         resolve(arrayObject)
       })
+
     }
 
     if (isDirectory(pathAbsolute)) {
       const arrayPath = getPathsDirectory(pathAbsolute)
       const totalResult = arrayPath.map((route) => {
+        //console.log(route)
         return mdLinks(route, config);
       })
 
       Promise.all(totalResult).then((total) => {
+        if (config.stats === true) {
+          //totalResult es un array de objeto
+          const initStat = config.validate === true ? { Total: 0, Unique: 0, Broken: 0 } : { Total: 0, Unique: 0 };
+
+          const statResult = total.reduce((prev, curr) => {
+            const total = prev.Total + curr.Total
+            const unique = prev.Unique + curr.Unique
+            const broken = prev.Broken + curr.Broken
+            return config.validate === true ? { Total: total, Unique: unique, Broken: broken } : { Total: total, Unique: unique, }
+          }, initStat)
+
+          resolve(statResult)
+        }
+
         resolve(total.flat())
       })
     }
@@ -191,6 +221,6 @@ module.exports = {
   processFile,
 }
 
-// mdLinks('storage', { validate: true }).then((resultados) => {
-//   console.log(resultados)
-// })
+mdLinks('storage', { validate: true, stats: true }).then((resultados) => {
+  console.log(resultados)
+})
