@@ -89,13 +89,6 @@ function validateLink(url) {
 //     console.log(error.response.status)
 //   })
 
-// function stats(arrayLinks) {
-//   const totalLinks = arrayLinks.map(link => link.href);
-//   const uniqueLinks = [...new Set(totalLinks)]
-//   const broken = arrayLinks.filter(link => link.status != 200)
-
-// }
-
 function stats(arrayLinks, config) {
   const totalLinks = arrayLinks.map(link => link.href);
   const uniqueLinks = [...new Set(totalLinks)]
@@ -113,7 +106,6 @@ function stats(arrayLinks, config) {
   }
 }
 
-
 function processFile(path, config) {
   return new Promise((resolve) => {
     // const isFile = isFile(path)
@@ -126,7 +118,7 @@ function processFile(path, config) {
           // console.log(resultItem)
           return { ...items, ...resultItem }
         } catch (error) {
-          // console.log(error)
+          console.log(error)
           return {
             ...items,
             url: items.href,
@@ -146,6 +138,22 @@ function processFile(path, config) {
 
 }
 
+// processFile('https://www.geeksforgeeks.org/node-js-fs-readfilesync-method2/', { validate: false }).then((resultar) => {
+//   console.log(resultar)
+// })
+//   .catch((error) => {
+//     console.log(error)
+//   })
+
+
+// validateLink('https://www.geeksforgeeks.org/node-js-fs-readfilesync-method2/').then((data) => {
+//   console.log(data)
+// })
+//   .catch((error) => {
+//     console.log(error.response.status)
+//   })
+
+
 
 function getPathsDirectory(path) {
   const files = openDir(path)
@@ -157,10 +165,6 @@ function getPathsDirectory(path) {
   })
 }
 // console.log(getPathsDirectory('storage'))
-
-
-
-// console.log(stats(scanLinks('storage/file.md')))
 
 const mdLinks = (path, config = { validate: false, stats: false }) => {
   return new Promise((resolve, reject) => {
@@ -219,8 +223,12 @@ module.exports = {
   validateLink,
   getPathsDirectory,
   processFile,
+  toPathAbsolute,
+  fileExtension,
+  pathExist,
+  stats
 }
 
-mdLinks('storage', { validate: true, stats: true }).then((resultados) => {
-  console.log(resultados)
-})
+// mdLinks('storage', { validate: true, stats: true }).then((resultados) => {
+//   console.log(resultados)
+// })

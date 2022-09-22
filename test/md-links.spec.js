@@ -7,6 +7,10 @@ const {
   validateLink,
   processFile,
   getPathsDirectory,
+  toPathAbsolute,
+  fileExtension,
+  pathExist,
+  stats
 
 } = require('../index.js');
 const axios = require('axios')
@@ -37,8 +41,8 @@ describe('Directory Content', () => {
     const result = [
       'file.md',
       'prueba.md',
+      'prueba.txt',
       'pruebadecontenido.md',
-      'prueba.txt'
     ];
     expect(openDir('./storage')).toEqual(result)
   });
@@ -67,12 +71,58 @@ describe('scanLinks', () => {
     expect(scanLinks('storage/prueba.md')).toEqual(arrayLinks)
   })
 })
+describe('path is absolute', () => {
+  it('should return an absolute path', () => {
+    const path = 'https://github.com/karlavasquez8/md-links/blob/main/storage/prueba.md'
+    expect(toPathAbsolute(path)).toBeTruthy()
+  })
+})
+
+describe('extension md', () => {
+  it('should return a path with extension md', () => {
+    expect(fileExtension('storage/prueba.md')).toBeTruthy()
+    expect(fileExtension('storage/prueba.txt')).toBeFalsy()
+  })
+})
+describe('existing path', () => {
+  it('should return an existing path', () => {
+    expect(pathExist('storage/prueba.md')).toBeTruthy()
+    expect(pathExist('storage/prueba2.md')).toBeFalsy()
+  })
+})
+
 describe('validate Links', () => {
-  it.only('should return an object with a status of ok', () => {
+  it('should return an object with a status of ok', () => {
     axios.get.mockImplementation(() => Promise.resolve({ status: 200 }))
     validateLink('https://nodejs.org/').then((data) => {
       console.log(data)
       expect(data).toEqual({ url: 'https://nodejs.org/', status: 200, menssage: 'ok' })
     })
+  })
+})
+describe('statistics', () => {
+  it('should return the statistics of the path -validate true', () => {
+    const arrayObject = [
+      {
+        href: 'https://nodejs.org/es/',
+        text: 'Node.js',
+        file: 'storage/file.md'
+      },
+    ]
+    const result = { Total: 1, Unique: 1, Broken: 1 }
+    expect(stats(arrayObject, { validate: true, stats: true })).toStrictEqual(result)
+
+  })
+  it('should return the statistics of the path -validate false', () => {
+    const arrayObject = [
+      {
+        href: 'https://nodejs.org/es/',
+        text: 'Node.js',
+        file: 'storage/file.md'
+      },
+    ]
+    const result = { Total: 1, Unique: 1 }
+    expect(stats(arrayObject, { validate: false, stas: true })).toStrictEqual(result)
+
   })
 })
