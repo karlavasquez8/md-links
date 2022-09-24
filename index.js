@@ -226,7 +226,7 @@ module.exports = {
   toPathAbsolute,
   fileExtension,
   pathExist,
-  stats
+  stats, mdLinks
 }
 
 // mdLinks('storage', { validate: true, stats: true }).then((resultados) => {

@@ -1,14 +1,25 @@
 {
-  "name": "md-links",
+  "name": "md-links-kvasquez",
   "version": "0.1.0",
+  "description": "libreria para buscar links, verificar el estado de validez y obtener estadisticas de archivos tipo Markdown",
+  "author": {
+    "name": "Karla Vasquez",
+    "email": "karlavasquez817@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/karlavasquez8/md-links"
+  },
+  "license": "ISC",
   "bin": {
-    "md-links": "./index.js"
+    "md-links": "./cli.js"
   },
   "engines": {
     "node": ">=16.x"
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "chalk": "^4.1.2",
     "jsdom": "^20.0.0",
     "markdown-it": "^13.0.1"
   },
