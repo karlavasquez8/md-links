@@ -71,6 +71,7 @@ function scanLinks(path) {
 function validateLink(url) {
   return axios.get(url)
     .then((data) => {
+      // console.log(data)
       if (data.status === 200) {
         return {
           url,
@@ -82,11 +83,11 @@ function validateLink(url) {
 };
 
 // probando el la funcion para validar links
-// validateLink('https://www.geeksforgeeks.org/node-js-fs-readfilesync-method2/').then((data) => {
+// validateLink('/Users/karlita/proyectos/LIM018-md-links/storage/prueba2.md').then((data) => {
 //   console.log(data)
 // })
 //   .catch((error) => {
-//     console.log(error.response.status)
+//     console.log(error.response)
 //   })
 
 function stats(arrayLinks, config) {
@@ -118,7 +119,6 @@ function processFile(path, config) {
           // console.log(resultItem)
           return { ...items, ...resultItem }
         } catch (error) {
-          console.log(error)
           return {
             ...items,
             url: items.href,
@@ -138,8 +138,8 @@ function processFile(path, config) {
 
 }
 
-// processFile('https://www.geeksforgeeks.org/node-js-fs-readfilesync-method2/', { validate: false }).then((resultar) => {
-//   console.log(resultar)
+// processFile(`/Users/karlita/proyectos/LIM018-md-links/storage/file2.md`, { validate: true }).then((resultar) => {
+//   // console.log(resultar)
 // })
 //   .catch((error) => {
 //     console.log(error)
@@ -147,10 +147,10 @@ function processFile(path, config) {
 
 
 // validateLink('https://www.geeksforgeeks.org/node-js-fs-readfilesync-method2/').then((data) => {
-//   console.log(data)
+//   // console.log(data)
 // })
 //   .catch((error) => {
-//     console.log(error.response.status)
+//     console.log(error)
 //   })
 
 

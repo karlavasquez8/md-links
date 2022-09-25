@@ -91,15 +91,6 @@ describe('existing path', () => {
   })
 })
 
-describe('validate Links', () => {
-  it('should return an object with a status of ok', () => {
-    axios.get.mockImplementation(() => Promise.resolve({ status: 200 }))
-    validateLink('https://nodejs.org/').then((data) => {
-      console.log(data)
-      expect(data).toEqual({ url: 'https://nodejs.org/', status: 200, menssage: 'ok' })
-    })
-  })
-})
 describe('statistics', () => {
   it('should return the statistics of the path -validate true', () => {
     const arrayObject = [
@@ -123,6 +114,80 @@ describe('statistics', () => {
     ]
     const result = { Total: 1, Unique: 1 }
     expect(stats(arrayObject, { validate: false, stas: true })).toStrictEqual(result)
-
   })
+})
+
+describe('validate Links', () => {
+  it('should return an object with a status of ok', () => {
+    axios.get.mockImplementation(() => Promise.resolve({ status: 200 }))
+    validateLink('https://nodejs.org/').then((data) => {
+      console.log(data)
+      expect(data).toEqual({ url: 'https://nodejs.org/', status: 200, menssage: 'ok' })
+    })
+  })
+})
+describe('get path or directory', () => {
+  it('should return an array of directory paths', () => {
+    const arrayPath = [
+      '/Users/karlita/proyectos/LIM018-md-links/storage/file.md',
+      '/Users/karlita/proyectos/LIM018-md-links/storage/prueba.md',
+      '/Users/karlita/proyectos/LIM018-md-links/storage/pruebadecontenido.md'
+    ]
+    expect(getPathsDirectory('storage')).toEqual(arrayPath)
+  })
+})
+
+describe('process file', () => {
+  it('should return an array of objects with 6 items if true', () => {
+    const trueValidate = [
+      {
+        href: 'https://nodejs.org/es/',
+        text: 'Node.js',
+        file: '/Users/karlita/proyectos/LIM018-md-links/storage/file.md',
+        url: 'https://nodejs.org/es/',
+        status: 200,
+        menssage: 'ok'
+      },
+      {
+        href: 'https://developers.google.com/v8/',
+        text: 'motor de JavaScript V8 de Chrome',
+        file: '/Users/karlita/proyectos/LIM018-md-links/storage/file.md',
+        url: 'https://developers.google.com/v8/',
+        status: 200,
+        menssage: 'ok'
+      }
+    ]
+    processFile(`/Users/karlita/proyectos/LIM018-md-links/storage/file.md`, { validate: true }).then((result) => {
+      expect(result).toEqual(trueValidate)
+    })
+  })
+  it('should return an array of objects with 3 items if false', () => {
+    expect.assertions(1);
+    const trueFalse = [
+      {
+        href: 'https://nodejs.org/es/',
+        text: 'Node.js',
+        file: '/Users/karlita/proyectos/LIM018-md-links/storage/file.md',
+      },
+      {
+        href: 'https://developers.google.com/v8/',
+        text: 'motor de JavaScript V8 de Chrome',
+        file: '/Users/karlita/proyectos/LIM018-md-links/storage/file.md',
+      }
+    ]
+    processFile(`/Users/karlita/proyectos/LIM018-md-links/storage/file.md`, { validate: false }).then((result) => {
+      expect(result).toEqual(trueFalse)
+    })
+  })
+  it('should return an array of objects with 3 items if false', () => {
+    expect.assertions(1);
+
+    processFile(`/Users/karlita/proyectos/LIM018-md-links/storage/file2.md`, { validate: true })
+      .catch((error) => {
+        console.log(error)
+        expect(error.code).toEqual('ENOENT');
+        //expect(error).toEqual({ url: `/Users/karlita/proyectos/LIM018-md-links/storage/file2.md`, status: 404, message: 'No Found' })
+      })
+  })
+
 })
