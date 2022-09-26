@@ -24,7 +24,7 @@ npm install md-links-kvasquez
 #### Guia 
 Si el usuario no ingresa ninguna url se mostrará el mensaje indicando el error.
 
-![message fail](/Users/karlita/proyectos/LIM018-md-links/img-readme/fail.png)
+![message fail](https://github.com/karlavasquez8/md-links/blob/main/img-readme/diagrama-de-flujo.png?raw=true)
 
 Si se solicita ayuda se puede ingresar la opcion `--help`, el cual le detallará las opciones.
 
