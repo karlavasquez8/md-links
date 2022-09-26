@@ -11,7 +11,7 @@ la información que se quiere compartir.
 
 ## Diagrama de Flujo
 
-![Diagrama de flujo](/Users/karlita/proyectos/LIM018-md-links/img-readme/diagrama-de-flujo.png)
+![Diagrama de flujo](https://github.com/karlavasquez8/md-links/blob/main/img-readme/diagrama-de-flujo.png?raw=true)
 
 ## Instalar
 
