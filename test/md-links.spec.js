@@ -84,6 +84,7 @@ describe('extension md', () => {
     expect(fileExtension('storage/prueba.txt')).toBeFalsy()
   })
 })
+
 describe('existing path', () => {
   it('should return an existing path', () => {
     expect(pathExist('storage/prueba.md')).toBeTruthy()
@@ -92,7 +93,7 @@ describe('existing path', () => {
 })
 
 describe('statistics', () => {
-  it('should return the statistics of the path -validate true', () => {
+  it('should return the statistics of the path --validate true', () => {
     const arrayObject = [
       {
         href: 'https://nodejs.org/es/',
@@ -118,14 +119,25 @@ describe('statistics', () => {
 })
 
 describe('validate Links', () => {
+
   it('should return an object with a status of ok', () => {
-    axios.get.mockImplementation(() => Promise.resolve({ status: 200 }))
+    axios.get.mockImplementationOnce(() => Promise.resolve({ status: 200 }))
     validateLink('https://nodejs.org/').then((data) => {
-      console.log(data)
       expect(data).toEqual({ url: 'https://nodejs.org/', status: 200, menssage: 'ok' })
     })
   })
+
+  it('should return an object with a status of fail', () => {
+    expect.assertions(1)
+    axios.get.mockImplementationOnce(() => Promise.reject({ response: { status: 404 } }))
+
+
+    validateLink('https://www.geeksforgeeks.org/node-js-fs-readfilesync-method2/', { validate: true }).catch((error) => {
+      expect(error).toEqual({ response: { status: 404 } })
+    })
+  })
 })
+
 describe('get path or directory', () => {
   it('should return an array of directory paths', () => {
     const arrayPath = [
@@ -138,7 +150,11 @@ describe('get path or directory', () => {
 })
 
 describe('process file', () => {
+
   it('should return an array of objects with 6 items if true', () => {
+    axios.get.mockImplementationOnce(() => Promise.resolve({ status: 200 }))
+    axios.get.mockImplementationOnce(() => Promise.resolve({ status: 200 }))
+
     const trueValidate = [
       {
         href: 'https://nodejs.org/es/',
@@ -161,6 +177,7 @@ describe('process file', () => {
       expect(result).toEqual(trueValidate)
     })
   })
+
   it('should return an array of objects with 3 items if false', () => {
     expect.assertions(1);
     const trueFalse = [
@@ -179,15 +196,4 @@ describe('process file', () => {
       expect(result).toEqual(trueFalse)
     })
   })
-  it('should return an array of objects with 3 items if false', () => {
-    expect.assertions(1);
-
-    processFile(`/Users/karlita/proyectos/LIM018-md-links/storage/file2.md`, { validate: true })
-      .catch((error) => {
-        console.log(error)
-        expect(error.code).toEqual('ENOENT');
-        //expect(error).toEqual({ url: `/Users/karlita/proyectos/LIM018-md-links/storage/file2.md`, status: 404, message: 'No Found' })
-      })
-  })
-
 })

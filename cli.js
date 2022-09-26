@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const { mdLinks } = require('./index.js');
 const chalk = require('chalk');
-const { has } = require('markdown-it/lib/common/utils');
 // console.log(chalk.blue('hello world!'))
 
 const pathOrHelp = process.argv[2]
@@ -25,6 +24,7 @@ if (pathOrHelp === undefined) {
 } else {
     if (help) {
         console.log(chalk.yellowBright(`
+
         █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█ Do you need help?
         █  ╦ ╦╔╗╦ ╔╗╔╗╔╦╗╔╗  █ This are the commands options:
         █  ║║║╠ ║ ║ ║║║║║╠   █ --validate (to get href,title, status and message for each link)

@@ -71,7 +71,6 @@ function scanLinks(path) {
 function validateLink(url) {
   return axios.get(url)
     .then((data) => {
-      // console.log(data)
       if (data.status === 200) {
         return {
           url,
@@ -116,6 +115,7 @@ function processFile(path, config) {
       const promisesArray = listFoundLinks.map(async (items) => {
         try {
           const resultItem = await validateLink(items.href)
+
           // console.log(resultItem)
           return { ...items, ...resultItem }
         } catch (error) {
@@ -127,6 +127,8 @@ function processFile(path, config) {
           }
         }
       })
+
+
       Promise.all(promisesArray).then((result) => {
         resolve(result)
       })
