@@ -231,6 +231,6 @@ module.exports = {
   stats, mdLinks
 }
 
-// mdLinks('storage', { validate: true, stats: true }).then((resultados) => {
+// mdLinks('', { validate: true }).then((resultados) => {
 //   console.log(resultados)
 // })

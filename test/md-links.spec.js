@@ -10,7 +10,8 @@ const {
   toPathAbsolute,
   fileExtension,
   pathExist,
-  stats
+  stats,
+  mdLinks
 
 } = require('../index.js');
 const axios = require('axios')
@@ -121,6 +122,7 @@ describe('statistics', () => {
 describe('validate Links', () => {
 
   it('should return an object with a status of ok', () => {
+    expect.assertions(1)
     axios.get.mockImplementationOnce(() => Promise.resolve({ status: 200 }))
     validateLink('https://nodejs.org/').then((data) => {
       expect(data).toEqual({ url: 'https://nodejs.org/', status: 200, menssage: 'ok' })
@@ -139,6 +141,7 @@ describe('validate Links', () => {
 })
 
 describe('get path or directory', () => {
+
   it('should return an array of directory paths', () => {
     const arrayPath = [
       '/Users/karlita/proyectos/LIM018-md-links/storage/file.md',
@@ -180,7 +183,11 @@ describe('process file', () => {
 
   it('should return an array of objects with 3 items if false', () => {
     expect.assertions(1);
-    const trueFalse = [
+
+    axios.get.mockImplementationOnce(() => Promise.resolve({ status: 200 }))
+    axios.get.mockImplementationOnce(() => Promise.resolve({ status: 200 }))
+
+    const validateFalse = [
       {
         href: 'https://nodejs.org/es/',
         text: 'Node.js',
@@ -193,7 +200,45 @@ describe('process file', () => {
       }
     ]
     processFile(`/Users/karlita/proyectos/LIM018-md-links/storage/file.md`, { validate: false }).then((result) => {
-      expect(result).toEqual(trueFalse)
+      expect(result).toEqual(validateFalse)
+    })
+  })
+})
+
+describe('md links', () => {
+  const config = {
+    validate: false,
+    stats: false,
+  }
+  const arrayLinks = [
+    {
+      href: 'https://es.wikipedia.org/wiki/Markdown',
+      text: 'Markdown',
+      file: '/Users/karlita/proyectos/LIM018-md-links/storage/prueba.md'
+    },
+    {
+      href: 'https://nodejs.org/',
+      text: 'Node.js',
+      file: '/Users/karlita/proyectos/LIM018-md-links/storage/prueba.md'
+    }
+  ]
+
+  it('should return an error if the path does not exist', () => {
+    mdLinks('/storage/file2.md', config).catch((error) => {
+      expect(error.message).toBe('no existe la ruta')
+    })
+  })
+
+  it('should return an array of objects with links if the path exists', () => {
+    mdLinks('/Users/karlita/proyectos/LIM018-md-links/storage/prueba.md').then((data) => {
+      expect(data).toStrictEqual(arrayLinks)
+    })
+  })
+
+  it('it should return the statistics if it is stats', () => {
+    const statsResult = { Total: 2, Unique: 2, };
+    mdLinks('/Users/karlita/proyectos/LIM018-md-links/storage/prueba.md', { stats: true }).then((data) => {
+      expect(data).toStrictEqual(statsResult)
     })
   })
 })
