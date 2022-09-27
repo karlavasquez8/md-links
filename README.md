@@ -22,7 +22,7 @@ npm install md-links-kvasquez
 
 ## Comando CLI
 #### Guia 
-Si el usuario no ingresa ninguna url se mostrará el mensaje indicando el error.
+Si el usuario no ingresa ningun archivo se mostrará el mensaje indicando el error.
 
 ![message fail](https://github.com/karlavasquez8/md-links/blob/main/img-readme/fail.png?raw=true)
 
